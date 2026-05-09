@@ -1,0 +1,12 @@
+[build]
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/tiktok/user/*"
+  to = "/.netlify/functions/tiktok-user?username=:splat"
+  status = 200
+
+[[redirects]]
+  from = "/api/tiktok/avatar/*"
+  to = "/.netlify/functions/tiktok-avatar?username=:splat"
+  status = 200
