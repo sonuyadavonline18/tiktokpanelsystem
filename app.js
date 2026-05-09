@@ -457,31 +457,43 @@ function updateAmountDisplay() {
 
 // ===== PAYMENT =====
 function processPayment() {
-  const amount = parseFloat(state.amount);
-  const user = state.selectedUser;
+  const btn = $('confirmPayBtn');
+  if (btn.classList.contains('processing')) return;
+  
+  btn.classList.add('processing');
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = `<div class="spinner"></div>`;
+  
+  setTimeout(() => {
+    btn.classList.remove('processing');
+    btn.innerHTML = originalHtml;
+    
+    const amount = parseFloat(state.amount);
+    const user = state.selectedUser;
 
-  // Update balance
-  state.balance -= amount;
-  $('balanceAmount').textContent = `$${formatNum(state.balance)}`;
+    // Update balance
+    state.balance -= amount;
+    $('balanceAmount').textContent = `$${formatNum(state.balance)}`;
 
-  // Add to transactions
-  state.transactions.unshift({
-    user, amount, type: 'sent', time: 'Just now', note: '🎁 LIVE Gift'
-  });
-  renderTransactions();
+    // Add to transactions
+    state.transactions.unshift({
+      user, amount, type: 'sent', time: 'Just now', note: '🎁 LIVE Gift'
+    });
+    renderTransactions();
 
-  // Show success
-  showStep(4);
-  $('successAmount').textContent = `$${formatNum(amount)}`;
-  $('successUser').textContent = user.name;
-  $('successTime').textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    // Show success
+    showStep(4);
+    $('successAmount').textContent = `$${formatNum(amount)}`;
+    $('successUser').textContent = user.name;
+    $('successTime').textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
 
-  // Add to live feed
-  const feedItem = document.createElement('div');
-  feedItem.className = 'feed-item';
-  feedItem.innerHTML = `<div class="feed-avatar" style="background:var(--green)">💸</div>
-    <div class="feed-text"><strong>You</strong> <span class="highlight">sent $${formatNum(amount)} to ${user.name}</span> 🎉</div>`;
-  liveFeed.prepend(feedItem);
+    // Add to live feed
+    const feedItem = document.createElement('div');
+    feedItem.className = 'feed-item';
+    feedItem.innerHTML = `<div class="feed-avatar" style="background:var(--green)">💸</div>
+      <div class="feed-text"><strong>You</strong> <span class="highlight">sent $${formatNum(amount)} to ${user.name}</span> 🎉</div>`;
+    liveFeed.prepend(feedItem);
+  }, 1000);
 }
 
 // ===== UTILS =====
