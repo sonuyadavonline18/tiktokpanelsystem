@@ -15,14 +15,23 @@ const TIKTOK_USERS = [
 // ===== TIKTOK USER CACHE =====
 const _tiktokCache = new Map();
 
-// Fetch ANY TikTok user via our local server API
+// Auto-detect environment for API URLs
+const _isNetlify = location.hostname.includes('netlify.app');
+const _apiUserUrl = _isNetlify
+  ? '/.netlify/functions/tiktok-user?username='
+  : '/api/tiktok/user/';
+const _apiAvatarUrl = _isNetlify
+  ? '/.netlify/functions/tiktok-avatar?username='
+  : '/api/tiktok/avatar/';
+
+// Fetch ANY TikTok user via serverless API
 async function fetchTikTokUser(username) {
   const clean = username.replace(/[$@\s]/g, '').toLowerCase();
   if (!clean || clean.length < 2) return null;
   if (_tiktokCache.has(clean)) return _tiktokCache.get(clean);
 
   try {
-    const resp = await fetch(`/api/tiktok/user/${encodeURIComponent(clean)}`);
+    const resp = await fetch(_apiUserUrl + encodeURIComponent(clean));
     const data = await resp.json();
     if (data.found) {
       const user = {
@@ -31,7 +40,7 @@ async function fetchTikTokUser(username) {
         handle: data.handle,
         followers: data.followers,
         verified: data.verified,
-        avatar: `/api/tiktok/avatar/${data.id}`,
+        avatar: _apiAvatarUrl + data.id,
         color: _hashColor(data.id),
         real: true
       };
