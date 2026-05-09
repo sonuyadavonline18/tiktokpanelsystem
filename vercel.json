@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/tiktok/user/:username", "destination": "/api/tiktok/user" },
+    { "source": "/api/tiktok/avatar/:username", "destination": "/api/tiktok/avatar" }
+  ]
+}
