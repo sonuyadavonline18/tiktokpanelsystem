@@ -484,6 +484,7 @@ function processPayment() {
     // Show success
     showStep(4);
     $('successAmount').textContent = `$${formatNum(amount)}`;
+    $('successAvatar').innerHTML = avatarHTML(user, 72, 'sa-avatar');
     $('successUser').textContent = user.name;
     $('successTime').textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
 
