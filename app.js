@@ -494,7 +494,7 @@ function processPayment() {
     feedItem.innerHTML = `<div class="feed-avatar" style="background:var(--green)">💸</div>
       <div class="feed-text"><strong>You</strong> <span class="highlight">sent $${formatNum(amount)} to ${user.name}</span> 🎉</div>`;
     liveFeed.prepend(feedItem);
-  }, 1000);
+  }, 2500);
 }
 
 // ===== UTILS =====
