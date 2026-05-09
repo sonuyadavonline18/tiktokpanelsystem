@@ -40,7 +40,7 @@ async function fetchTikTokUser(username) {
         handle: data.handle,
         followers: data.followers,
         verified: data.verified,
-        avatar: _apiAvatarUrl + data.id,
+        avatar: data.avatar || (_apiAvatarUrl + data.id),
         color: _hashColor(data.id),
         real: true
       };
