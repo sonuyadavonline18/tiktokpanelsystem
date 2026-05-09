@@ -343,17 +343,39 @@ function showStep(n) {
   $(`sendStep${n}`).classList.add('active');
   state.currentStep = n;
 
-  if (n === 2) {
+  if (n === 2 || n === 3 || n === 4) {
     sendModal.classList.add('green-theme');
   } else {
     sendModal.classList.remove('green-theme');
   }
 
-  // Update modal title
-  const titles = {1:'Pay',2:'Enter Amount',3:'Confirm',4:''};
+  // Generate dynamic titles
+  let step2Title = 'Enter Amount';
+  if (n === 2) {
+    const _randomUsers = ['@jessica_xo','@gamer_boy01','@emma.dance','@david_smith99','@sarah_vibes','@mike.fitness','@luna_stars'];
+    const rUser = _randomUsers[Math.floor(Math.random() * _randomUsers.length)];
+    const giftMsgs = ['sent a 🌹 Rose','sent a 🦁 Lion','sent a 🌍 Universe','sent a 💎 Diamond','sent a 🚀 Rocket'];
+    const rGift = giftMsgs[Math.floor(Math.random() * giftMsgs.length)];
+    step2Title = `${rUser} ${rGift}`;
+  }
+  
+  let step3Title = 'Confirm';
+  if (n === 3) {
+    const lastSent = state.transactions.find(t => t.type === 'sent');
+    const lastUser = lastSent ? lastSent.user.handle : '@user';
+    step3Title = `You sent money to ${lastUser}`;
+  }
+  
+  let step4Title = '';
+  if (n === 4) {
+    step4Title = `You sent money to ${state.selectedUser ? state.selectedUser.handle : '@user'}`;
+  }
+
+  const titles = {1:'Pay',2:step2Title,3:step3Title,4:step4Title};
   $('sendModalClose').style.visibility = n === 4 ? 'hidden' : 'visible';
   const titleEl = document.querySelector('.modal-title');
   titleEl.textContent = titles[n] || '';
+  titleEl.style.fontSize = (n===2||n===3||n===4) ? '14px' : '18px'; // Make notification text fit
 }
 
 function goToStep(n) {
