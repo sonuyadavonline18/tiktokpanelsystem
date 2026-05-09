@@ -343,39 +343,66 @@ function showStep(n) {
   $(`sendStep${n}`).classList.add('active');
   state.currentStep = n;
 
-  if (n === 2 || n === 3 || n === 4) {
-    sendModal.classList.add('green-theme');
-  } else {
-    sendModal.classList.remove('green-theme');
-  }
+  sendModal.classList.remove('green-theme');
 
-  // Generate dynamic titles
-  let step2Title = 'Enter Amount';
+  const titles = {1:'Pay',2:'Enter Amount',3:'Confirm',4:''};
+  $('sendModalClose').style.visibility = n === 4 ? 'hidden' : 'visible';
+  const titleEl = document.querySelector('.modal-title');
+  titleEl.textContent = titles[n] || '';
+  titleEl.style.fontSize = '18px';
+
+  // Pop-up notifications instead of changing title
   if (n === 2) {
     const _randomUsers = ['@jessica_xo','@gamer_boy01','@emma.dance','@david_smith99','@sarah_vibes','@mike.fitness','@luna_stars'];
     const rUser = _randomUsers[Math.floor(Math.random() * _randomUsers.length)];
     const giftMsgs = ['sent a 🌹 Rose','sent a 🦁 Lion','sent a 🌍 Universe','sent a 💎 Diamond','sent a 🚀 Rocket'];
     const rGift = giftMsgs[Math.floor(Math.random() * giftMsgs.length)];
-    step2Title = `${rUser} ${rGift}`;
-  }
-  
-  let step3Title = 'Confirm';
-  if (n === 3) {
+    setTimeout(() => showToast(`${rUser} ${rGift}`), 400);
+  } else if (n === 3) {
     const lastSent = state.transactions.find(t => t.type === 'sent');
     const lastUser = lastSent ? lastSent.user.handle : '@user';
-    step3Title = `You sent money to ${lastUser}`;
+    setTimeout(() => showToast(`You sent money to ${lastUser}`), 400);
+  } else if (n === 4) {
+    setTimeout(() => showToast(`You sent money to ${state.selectedUser ? state.selectedUser.handle : '@user'}`), 400);
+  }
+}
+
+function showToast(message, duration = 3500) {
+  let toast = document.getElementById('app-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'app-toast';
+    toast.style.cssText = `
+      position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-150%);
+      background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 14px 24px;
+      border-radius: 30px; font-size: 14px; font-weight: 600; z-index: 10000; opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.32, 0.72, 0.24, 1), opacity 0.3s ease;
+      display: flex; align-items: center; gap: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      white-space: nowrap;
+    `;
+    document.body.appendChild(toast);
   }
   
-  let step4Title = '';
-  if (n === 4) {
-    step4Title = `You sent money to ${state.selectedUser ? state.selectedUser.handle : '@user'}`;
-  }
-
-  const titles = {1:'Pay',2:step2Title,3:step3Title,4:step4Title};
-  $('sendModalClose').style.visibility = n === 4 ? 'hidden' : 'visible';
-  const titleEl = document.querySelector('.modal-title');
-  titleEl.textContent = titles[n] || '';
-  titleEl.style.fontSize = (n===2||n===3||n===4) ? '14px' : '18px'; // Make notification text fit
+  toast.innerHTML = `
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00f2ea" stroke-width="2">
+      <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+    </svg>
+    <span>${message}</span>
+  `;
+  
+  // Animate in
+  requestAnimationFrame(() => {
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+    toast.style.opacity = '1';
+  });
+  
+  // Animate out
+  if (toast.timer) clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => {
+    toast.style.transform = 'translateX(-50%) translateY(-150%)';
+    toast.style.opacity = '0';
+  }, duration);
 }
 
 function goToStep(n) {
